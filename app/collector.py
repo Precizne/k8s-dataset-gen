@@ -59,7 +59,7 @@ def append_to_json(entry):
         data = []
     data.append(entry)
     with open(DATASET_FILE, "w") as f:
-        json.dump(data, f)
+        json.dump(data, f, indent=2)
 
 def collect_periodically():
     while True:
