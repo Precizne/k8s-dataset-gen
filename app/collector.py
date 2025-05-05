@@ -5,8 +5,7 @@ import threading
 import requests
 
 PROMETHEUS_URL = os.environ.get("PROMETHEUS_URL", "http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090")
-PROMETHEUS_QUERY = os.environ.get("PROMETHEUS_QUERY", "up")
-PROMETHEUS_QUERIES = os.environ.get("PROMETHEUS_QUERIES")
+PROMETHEUS_QUERIES = os.environ.get("PROMETHEUS_QUERIES", "[]")
 DATASET_FILE = os.environ.get("DATASET_FILE", "/data/dataset.json")
 COLLECTION_INTERVAL = int(os.environ.get("COLLECTION_INTERVAL", "30"))
 
@@ -38,10 +37,7 @@ def fetch_metrics_for_query(query):
     return entries
 
 def fetch_metrics():
-    if PROMETHEUS_QUERIES:
-        queries = [q.strip() for q in PROMETHEUS_QUERIES.split(",") if q.strip()]
-    else:
-        queries = [PROMETHEUS_QUERY]
+    queries = json.loads(PROMETHEUS_QUERIES)
     for query in queries:
         entries = fetch_metrics_for_query(query)
         for entry in entries:
