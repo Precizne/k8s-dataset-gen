@@ -11,7 +11,7 @@ COLLECTION_INTERVAL = int(os.environ.get("COLLECTION_INTERVAL", "30"))
 
 dataset = []
 
-def fetch_metrics_for_query(query):
+def fetch_metrics_for_query(name, query):
     entries = []
     try:
         response = requests.get(f"{PROMETHEUS_URL}/api/v1/query", params={"query": query})
@@ -27,7 +27,7 @@ def fetch_metrics_for_query(query):
             entry = {
                 "timestamp": now,
                 "query": query,
-                "metric_name": metric.get("__name__", "unknown"),
+                "metric_name": name,
                 "labels": metric,
                 "value": value
             }
@@ -38,8 +38,8 @@ def fetch_metrics_for_query(query):
 
 def fetch_metrics():
     queries = json.loads(PROMETHEUS_QUERIES)
-    for query in queries:
-        entries = fetch_metrics_for_query(query)
+    for q in queries:
+        entries = fetch_metrics_for_query(q["name"], q["query"])
         for entry in entries:
             dataset.append(entry)
             append_to_json(entry)
